@@ -9,6 +9,7 @@ export type Product = {
   numReviews: Number;
   countInStock: Number;
   description: string;
+  quantity?: number;
 };
 
 type Data = {
