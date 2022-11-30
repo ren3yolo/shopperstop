@@ -3,7 +3,6 @@ import type { AppProps } from "next/app";
 import { StoreProvider } from "../utils/Store";
 
 export default function App({ Component, pageProps }: AppProps) {
-  console.log("Rendered app");
   return (
     <StoreProvider>
       <Component {...pageProps} />

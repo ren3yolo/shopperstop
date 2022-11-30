@@ -8,7 +8,7 @@ type stateType = {
 };
 
 type actionType = {
-  type: "CART_ADD_ITEM";
+  type: "CART_REMOVE_ITEM" | "CART_ADD_ITEM";
   payload: Product;
 };
 
@@ -33,6 +33,14 @@ function reducer(state: stateType, action: actionType): stateType {
         //if index is not -1, add 1 to its current quantity
         cartItems[index].quantity! += 1;
       }
+
+      return { ...state, cart: { cartItems } };
+    }
+
+    case "CART_REMOVE_ITEM": {
+      const cartItems = state.cart.cartItems.filter(
+        (product) => product.slug !== action.payload.slug
+      );
 
       return { ...state, cart: { cartItems } };
     }
