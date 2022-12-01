@@ -8,7 +8,7 @@ type stateType = {
 };
 
 type actionType = {
-  type: "CART_REMOVE_ITEM" | "CART_ADD_ITEM";
+  type: "CART_REMOVE_ITEM" | "CART_ADD_ITEM" | "CART_UPDATE_ITEM";
   payload: Product;
 };
 
@@ -43,6 +43,19 @@ function reducer(state: stateType, action: actionType): stateType {
       );
 
       return { ...state, cart: { cartItems } };
+    }
+
+    case "CART_UPDATE_ITEM": {
+      const cartItems = state.cart.cartItems;
+      const index = cartItems.findIndex(
+        (product) => product.slug === action.payload.slug
+      );
+      if (index !== -1) {
+        cartItems[index] = action.payload;
+        return { ...state, cart: { cartItems } };
+      }
+
+      return { ...state };
     }
 
     default:

@@ -6,8 +6,8 @@ export type Product = {
   price: number;
   brand: string;
   rating: number;
-  numReviews: Number;
-  countInStock: Number;
+  numReviews: number;
+  countInStock: number;
   description: string;
   quantity?: number;
 };
