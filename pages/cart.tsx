@@ -6,8 +6,9 @@ import { StoreContext } from "../utils/Store";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { Product } from "../utils/data";
 import { NextRouter, useRouter } from "next/router";
+import dynamic from "next/dynamic";
 
-export default function Cart() {
+function Cart() {
   const router: NextRouter = useRouter();
   const { state, dispatch } = useContext(StoreContext);
   const {
@@ -109,3 +110,5 @@ export default function Cart() {
     </Layout>
   );
 }
+
+export default dynamic(() => Promise.resolve(Cart), { ssr: false });

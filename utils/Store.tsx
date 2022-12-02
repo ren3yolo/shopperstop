@@ -1,5 +1,6 @@
 import { createContext, Dispatch, PropsWithChildren, useReducer } from "react";
 import { Product } from "./data";
+import Cookies from "js-cookie";
 
 type stateType = {
   cart: {
@@ -13,7 +14,9 @@ type actionType = {
 };
 
 const initialState: stateType = {
-  cart: { cartItems: [] },
+  cart: Cookies.get("cart")
+    ? JSON.parse(Cookies.get("cart")!)
+    : { cartItems: [] },
 };
 
 function reducer(state: stateType, action: actionType): stateType {
@@ -33,16 +36,16 @@ function reducer(state: stateType, action: actionType): stateType {
         //if index is not -1, add 1 to its current quantity
         cartItems[index].quantity! += 1;
       }
-
-      return { ...state, cart: { cartItems } };
+      Cookies.set("cart", JSON.stringify({ cartItems }));
+      return { ...state, cart: { ...state.cart, cartItems: [...cartItems] } };
     }
 
     case "CART_REMOVE_ITEM": {
       const cartItems = state.cart.cartItems.filter(
         (product) => product.slug !== action.payload.slug
       );
-
-      return { ...state, cart: { cartItems } };
+      Cookies.set("cart", JSON.stringify({ cartItems }));
+      return { ...state, cart: { cartItems: [...cartItems] } };
     }
 
     case "CART_UPDATE_ITEM": {
@@ -52,7 +55,8 @@ function reducer(state: stateType, action: actionType): stateType {
       );
       if (index !== -1) {
         cartItems[index] = action.payload;
-        return { ...state, cart: { cartItems } };
+        Cookies.set("cart", JSON.stringify({ cartItems }));
+        return { ...state, cart: { cartItems: [...cartItems] } };
       }
 
       return { ...state };
