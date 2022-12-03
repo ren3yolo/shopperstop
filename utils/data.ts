@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+
 export type Product = {
   name: string;
   slug: string;
@@ -12,11 +14,27 @@ export type Product = {
   quantity?: number;
 };
 
+export type User = {
+  name: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+};
+
 type Data = {
   products: Product[];
+  users: User[];
 };
 
 export const data: Data = {
+  users: [
+    {
+      name: "Raj",
+      email: "raj.shekhar@gmail.com",
+      password: bcrypt.hashSync("12345"),
+      isAdmin: true,
+    },
+  ],
   products: [
     {
       name: "Free Shirt",
