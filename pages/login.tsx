@@ -100,7 +100,9 @@ export default function Login() {
           <p>
             {" "}
             Don&apos;t have an account? &nbsp;
-            <Link href='/'>Register</Link>{" "}
+            <Link href='/' className='link'>
+              Register
+            </Link>{" "}
           </p>
         </div>
       </form>

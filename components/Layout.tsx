@@ -4,7 +4,9 @@ import Link from "next/link";
 import { StoreContext } from "../utils/Store";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { Menu } from "@headlessui/react";
+import Cookies from "js-cookie";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -13,7 +15,7 @@ type LayoutProps = {
 
 export default function Layout({ children, title }: LayoutProps) {
   const { status, data: session } = useSession();
-  const { state } = useContext(StoreContext);
+  const { state, dispatch } = useContext(StoreContext);
   const { cart } = state;
   // const cartItems = cart.cartItems;
   const [cartItemsCount, setCartItemsCount] = useState(0);
@@ -22,6 +24,12 @@ export default function Layout({ children, title }: LayoutProps) {
     console.log("Changed");
     setCartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity!, 0));
   }, [cart.cartItems]);
+
+  function logoutHandler(): void {
+    Cookies.remove("cart");
+    dispatch({ type: "CART_RESET" });
+    signOut({ callbackUrl: "/login" });
+  }
 
   return (
     <>
@@ -36,11 +44,11 @@ export default function Layout({ children, title }: LayoutProps) {
       <div className='flex min-h-screen flex-col justify-between'>
         <header className=''>
           <nav className='flex h-12 justify-between shadow-md items-center px-4'>
-            <Link href='/' className='text-lg font-bold'>
+            <Link href='/' className='text-lg font-bold link'>
               ShopperStop
             </Link>
             <div>
-              <Link className='p-2' href='/cart'>
+              <Link className='p-2 link' href='/cart'>
                 Cart
                 {cartItemsCount > 0 && (
                   <span className='ml-1 rounded-full bg-red-600 px-2 py-1 text-sm text-white font-bold'>
@@ -48,13 +56,45 @@ export default function Layout({ children, title }: LayoutProps) {
                   </span>
                 )}
               </Link>
-              <Link className='p-2' href='/login'>
+              <Link className='p-2' href=''>
                 {status === "loading" ? (
                   "Loading"
                 ) : session?.user ? (
-                  session.user.name
+                  <Menu as='div' className='relative inline-block'>
+                    <Menu.Button className='text-blue-600'>
+                      {session.user.name}
+                    </Menu.Button>
+                    <div>
+                      <Menu.Items className='absolute right-0 w-56 origin-top-right bg-white shadow-lg'>
+                        <Menu.Item>
+                          <Link href={"/profile"} className='dropdown-link'>
+                            Profile
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link
+                            href={"/order-history"}
+                            className='dropdown-link'
+                          >
+                            Order History
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Link
+                            href={"#"}
+                            className='dropdown-link'
+                            onClick={logoutHandler}
+                          >
+                            Logout
+                          </Link>
+                        </Menu.Item>
+                      </Menu.Items>
+                    </div>
+                  </Menu>
                 ) : (
-                  <Link href='/login'>Login</Link>
+                  <Link href='/login' className='link'>
+                    Login
+                  </Link>
                 )}
               </Link>
             </div>

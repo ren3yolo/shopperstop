@@ -5,12 +5,20 @@ import Cookies from "js-cookie";
 type stateType = {
   cart: {
     cartItems: Array<Product>;
+    shippingAddress?: {
+      location: {};
+    };
+    paymentMethod?: string;
   };
 };
 
 type actionType = {
-  type: "CART_REMOVE_ITEM" | "CART_ADD_ITEM" | "CART_UPDATE_ITEM";
-  payload: Product;
+  type:
+    | "CART_REMOVE_ITEM"
+    | "CART_ADD_ITEM"
+    | "CART_UPDATE_ITEM"
+    | "CART_RESET";
+  payload?: Product;
 };
 
 const initialState: stateType = {
@@ -22,7 +30,7 @@ const initialState: stateType = {
 function reducer(state: stateType, action: actionType): stateType {
   switch (action.type) {
     case "CART_ADD_ITEM": {
-      const newItem: Product = action.payload;
+      const newItem: Product = action.payload!;
       const index: number = state.cart.cartItems.findIndex(
         (product) => product.slug === newItem.slug
       );
@@ -42,7 +50,7 @@ function reducer(state: stateType, action: actionType): stateType {
 
     case "CART_REMOVE_ITEM": {
       const cartItems = state.cart.cartItems.filter(
-        (product) => product.slug !== action.payload.slug
+        (product) => product.slug !== action?.payload?.slug
       );
       Cookies.set("cart", JSON.stringify({ cartItems }));
       return { ...state, cart: { cartItems: [...cartItems] } };
@@ -51,15 +59,26 @@ function reducer(state: stateType, action: actionType): stateType {
     case "CART_UPDATE_ITEM": {
       const cartItems = state.cart.cartItems;
       const index = cartItems.findIndex(
-        (product) => product.slug === action.payload.slug
+        (product) => product.slug === action?.payload?.slug
       );
-      if (index !== -1) {
+      if (index !== -1 && action.payload) {
         cartItems[index] = action.payload;
         Cookies.set("cart", JSON.stringify({ cartItems }));
         return { ...state, cart: { cartItems: [...cartItems] } };
       }
 
       return { ...state };
+    }
+
+    case "CART_RESET": {
+      return {
+        ...state,
+        cart: {
+          cartItems: [],
+          shippingAddress: { location: {} },
+          paymentMethod: "",
+        },
+      };
     }
 
     default:
