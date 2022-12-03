@@ -1,29 +1,60 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import Layout from "../components/Layout";
 import { useForm } from "react-hook-form";
+import { signIn, useSession } from "next-auth/react";
+import { getError } from "../utils/error";
+import { toast } from "react-toastify";
+import { NextRouter, useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+
+interface Query extends ParsedUrlQuery {
+  redirect?: string;
+}
 
 export default function Login() {
+  const { data: session } = useSession();
+  const router: NextRouter = useRouter();
+  const { redirect }: Query = router.query;
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push(redirect || "/");
+    }
+  }, [router, session, redirect]);
+
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
 
-  const submitHandler = ({
+  const submitHandler = async ({
     email,
     password,
   }: {
     email: string;
     password: string;
   }) => {
-    console.log(email, password);
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+      if (result?.error) {
+        toast.error(result.error);
+      }
+    } catch (error: any) {
+      toast.error(getError(error));
+    }
   };
 
   return (
     <Layout title='Login'>
       <form
         className='mx-auto max-w-screen-md'
+        // @ts-ignore
         onSubmit={handleSubmit(submitHandler)}
       >
         <h1 className='text-3xl mb-4'>Login</h1>
@@ -48,7 +79,7 @@ export default function Login() {
             {...register("password", {
               required: "Please enter password",
               minLength: {
-                value: 6,
+                value: 3,
                 message: "Password should be more than 5 characters",
               },
             })}

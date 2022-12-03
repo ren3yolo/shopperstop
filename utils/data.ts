@@ -15,10 +15,12 @@ export type Product = {
 };
 
 export type User = {
+  _id?: string;
   name: string;
   email: string;
   password: string;
   isAdmin: boolean;
+  emailVerified?: Date | null;
 };
 
 type Data = {
