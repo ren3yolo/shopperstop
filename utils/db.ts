@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType } from "mongoose";
+import { ProductSchema } from "../models/Product";
 
 //saving previous connections to mongodb here
 type ConnectionStateType = {
@@ -37,6 +38,17 @@ async function disconnect() {
   }
 }
 
-const db = { connect, disconnect };
+function convertDoc<T extends InferSchemaType<typeof ProductSchema>>(
+  doc: T & { _id?: string; createdAt?: number; updatedAt?: number }
+) {
+  return {
+    ...doc,
+    _id: doc?._id?.toString(),
+    createdAt: doc?.createdAt?.toString(),
+    updatedAt: doc?.updatedAt?.toString(),
+  };
+}
+
+const db = { connect, disconnect, convertDoc };
 
 export default db;

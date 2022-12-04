@@ -1,13 +1,14 @@
 import { Schema, model, models } from "mongoose";
 import { Product as ProductType } from "../utils/data";
 
-const ProductSchema = new Schema<ProductType>(
+export const ProductSchema = new Schema<ProductType>(
   {
     name: { type: String, required: true },
     slug: { type: String, unique: true, required: true },
     category: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
+    numReviews: { type: Number, required: true },
     brand: { type: String, required: true },
     rating: { type: Number, required: true },
     countInStock: { type: Number, required: true },

@@ -4,20 +4,19 @@ import Image from "next/image";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext } from "react";
 import Layout from "../../components/Layout";
-import { data, Product } from "../../utils/data";
+import { data, Product as ProductType } from "../../utils/data";
 import { StoreContext } from "../../utils/Store";
+import db from "../../utils/db";
+import Product from "../../models/Product";
+import { NextPageContext } from "next";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-export default function ProductScreen() {
+export default function ProductScreen({ product }) {
   const { state, dispatch } = useContext(StoreContext);
-  console.log(state);
   const router: NextRouter = useRouter();
   const query: ParsedUrlQuery = router.query;
   const slug = query.slug;
-
-  // @ts-ignore
-  const product: Product = data.products.find(
-    (product) => product.slug === slug
-  );
 
   if (!product)
     return (
@@ -26,10 +25,16 @@ export default function ProductScreen() {
       </Layout>
     );
 
-  function addToCartHandler(): void {
-    const currentQty: number = product.quantity!;
-    if (product.countInStock <= currentQty) {
-      alert("Sorry ! Product is out of stock");
+  async function addToCartHandler() {
+    const { data }: { data: ProductType } = await axios.get(
+      `/api/products/${product._id}`
+    );
+    const existItem = state.cart.cartItems.find(
+      (item) => item.slug === product.slug
+    );
+    const currentQty: number = existItem?.quantity ? existItem.quantity + 1 : 1;
+    if (data.countInStock! < currentQty) {
+      toast.error("Sorry ! Product is out of stock");
       return;
     }
     dispatch({ type: "CART_ADD_ITEM", payload: product });
@@ -85,4 +90,19 @@ export default function ProductScreen() {
       </div>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context: NextPageContext) {
+  const {
+    query: { slug },
+  } = context;
+
+  await db.connect();
+  const product = await Product.findOne({ slug }).lean();
+  console.log(product);
+  return {
+    props: {
+      product: product ? db.convertDoc(product) : null,
+    },
+  };
 }

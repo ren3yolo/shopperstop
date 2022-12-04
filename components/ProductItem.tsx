@@ -6,9 +6,11 @@ import { Product } from "../utils/data";
 
 type Props = {
   product: Product;
+  // eslint-disable-next-line no-unused-vars
+  addToCartHandler: (p: Product) => void;
 };
 
-export default function ProductItem({ product }: Props) {
+export default function ProductItem({ product, addToCartHandler }: Props) {
   return (
     <div className='card'>
       <Link href={`/product/${product.slug}`}>
@@ -24,8 +26,12 @@ export default function ProductItem({ product }: Props) {
           <h2 className='text-lg'>{product.name}</h2>
         </Link>
         <p className='mb-2'>{product.brand}</p>
-        <p>${product.price.toString()}</p>
-        <button className='primary-button' type='button'>
+        <p>${product?.price?.toString()}</p>
+        <button
+          className='primary-button'
+          type='button'
+          onClick={() => addToCartHandler(product)}
+        >
           Add to cart
         </button>
       </div>
