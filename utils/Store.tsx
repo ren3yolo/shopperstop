@@ -1,13 +1,11 @@
 import { createContext, Dispatch, PropsWithChildren, useReducer } from "react";
-import { Product } from "./data";
+import { Product, ShippingAddress } from "./data";
 import Cookies from "js-cookie";
 
 type stateType = {
   cart: {
     cartItems: Array<Product>;
-    shippingAddress?: {
-      location: {};
-    };
+    shippingAddress?: ShippingAddress | undefined;
     paymentMethod?: string;
   };
 };
@@ -17,14 +15,16 @@ type actionType = {
     | "CART_REMOVE_ITEM"
     | "CART_ADD_ITEM"
     | "CART_UPDATE_ITEM"
-    | "CART_RESET";
-  payload?: Product;
+    | "CART_RESET"
+    | "SAVE_SHIPPING_ADDRESS"
+    | "SAVE_PAYMENT_METHOD";
+  payload?: Product & ShippingAddress;
 };
 
 const initialState: stateType = {
   cart: Cookies.get("cart")
     ? JSON.parse(Cookies.get("cart")!)
-    : { cartItems: [] },
+    : { cartItems: [], shippingAddress: undefined },
 };
 
 function reducer(state: stateType, action: actionType): stateType {
@@ -75,8 +75,37 @@ function reducer(state: stateType, action: actionType): stateType {
         ...state,
         cart: {
           cartItems: [],
-          shippingAddress: { location: {} },
+          shippingAddress: undefined,
           paymentMethod: "",
+        },
+      };
+    }
+
+    case "SAVE_SHIPPING_ADDRESS": {
+      const { fullName, address, city, postalCode, country } = action.payload!;
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingAddress: {
+            ...state.cart.shippingAddress,
+            fullName,
+            address,
+            city,
+            postalCode,
+            country,
+          },
+        },
+      };
+    }
+
+    case "SAVE_PAYMENT_METHOD": {
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          //@ts-ignore
+          paymentMethod: action.payload,
         },
       };
     }
