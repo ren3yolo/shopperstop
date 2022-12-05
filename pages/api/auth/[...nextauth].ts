@@ -19,13 +19,14 @@ export default NextAuth({
     async jwt({ token, user }: { token: IToken; user: UserType | undefined }) {
       if (user?._id) token.id = user._id;
       if (user?.isAdmin) token.isAdmin = user.isAdmin;
-
       return token;
     },
 
     async session({ session, token }: { session: any; token: IToken | null }) {
-      if (token?._id) session.user._id = token._id;
+      console.log("token in session", token);
+      if (token?.id) session.user._id = token.id;
       if (token?.isAdmin) session.user.isAdmin = token.isAdmin;
+      console.log("session", session);
       return session;
     },
   },
