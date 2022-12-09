@@ -21,7 +21,6 @@ export default function Layout({ children, title }: LayoutProps) {
   const [cartItemsCount, setCartItemsCount] = useState(0);
 
   useEffect(() => {
-    console.log("Changed");
     setCartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity!, 0));
   }, [cart.cartItems]);
 

@@ -99,7 +99,6 @@ export async function getServerSideProps(context: NextPageContext) {
 
   await db.connect();
   const product = await Product.findOne({ slug }).lean();
-  console.log(product);
   return {
     props: {
       product: product ? db.convertDoc(product) : null,

@@ -34,7 +34,6 @@ export default function Home<T extends ProductType>({
       (item) => item.slug === product.slug
     );
     const currentQty: number = existItem?.quantity ? existItem.quantity + 1 : 1;
-    console.log(data.countInStock, currentQty);
 
     if (data.countInStock! < currentQty) {
       toast.error("Sorry ! Product is out of stock");

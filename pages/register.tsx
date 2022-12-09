@@ -7,12 +7,13 @@ import { getError } from "../utils/error";
 import { toast } from "react-toastify";
 import { NextRouter, useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
+import axios from "axios";
 
 interface Query extends ParsedUrlQuery {
   redirect?: string;
 }
 
-export default function Login() {
+export default function Register() {
   const { data: session } = useSession();
   const router: NextRouter = useRouter();
   const { redirect }: Query = router.query;
@@ -26,10 +27,12 @@ export default function Login() {
   const {
     handleSubmit,
     register,
+    getValues,
     formState: { errors },
   } = useForm();
 
   const submitHandler = async ({
+    name,
     email,
     password,
   }: {
@@ -37,6 +40,12 @@ export default function Login() {
     password: string;
   }) => {
     try {
+      await axios.post("/api/auth/signup", {
+        name,
+        email,
+        password,
+      });
+
       const result = await signIn("credentials", {
         redirect: false,
         email,
@@ -51,13 +60,28 @@ export default function Login() {
   };
 
   return (
-    <Layout title='Login'>
+    <Layout title='Create Account'>
       <form
         className='mx-auto max-w-screen-md'
         // @ts-ignore
         onSubmit={handleSubmit(submitHandler)}
       >
-        <h1 className='text-3xl mb-4'>Login</h1>
+        <h1 className='text-3xl mb-4'>Create Account</h1>
+        <div className='mb-4'>
+          <label htmlFor='name'>Name</label>
+          <input
+            id='name'
+            type='text'
+            {...register("name", { required: "Please enter name" })}
+            className='w-full'
+            autoFocus
+          />
+          {errors.name && (
+            <div className='text-red-500'>
+              {errors.name.message?.toString()}
+            </div>
+          )}
+        </div>
         <div className='mb-4'>
           <label htmlFor='email'>Email</label>
           <input
@@ -94,16 +118,32 @@ export default function Login() {
           )}
         </div>
         <div className='mb-4'>
-          <button className='primary-button'>Login</button>
+          <label htmlFor='confirm-password'>Confirm Password</label>
+          <input
+            id='confirm-password'
+            {...register("confirmpassword", {
+              required: "Please enter password again",
+              minLength: {
+                value: 3,
+                message: "Password should be more than 5 characters",
+              },
+              validate: (value) => value === getValues("password"),
+            })}
+            type='password'
+            className='w-full'
+            autoFocus
+          />
+          {errors.confirmpassword && (
+            <div className='text-red-500'>
+              {errors.confirmpassword.message?.toString()}
+            </div>
+          )}
+          {errors.confirmpassword?.type === "validate" && (
+            <div className='text-red-500'>Passwords do not match</div>
+          )}
         </div>
         <div className='mb-4'>
-          <p>
-            {" "}
-            Don&apos;t have an account? &nbsp;
-            <Link href='/register' className='link'>
-              Register
-            </Link>
-          </p>
+          <button className='primary-button'>Register</button>
         </div>
       </form>
     </Layout>

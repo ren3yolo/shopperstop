@@ -23,10 +23,8 @@ export default NextAuth({
     },
 
     async session({ session, token }: { session: any; token: IToken | null }) {
-      console.log("token in session", token);
       if (token?.id) session.user._id = token.id;
       if (token?.isAdmin) session.user.isAdmin = token.isAdmin;
-      console.log("session", session);
       return session;
     },
   },
