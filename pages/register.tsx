@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React, { useEffect } from "react";
 import Layout from "../components/Layout";
 import { useForm } from "react-hook-form";
@@ -38,6 +37,7 @@ export default function Register() {
   }: {
     email: string;
     password: string;
+    name: string;
   }) => {
     try {
       await axios.post("/api/auth/signup", {

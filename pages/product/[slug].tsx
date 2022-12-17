@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
 import Image from "next/image";
-import { ParsedUrlQuery } from "querystring";
 import React, { useContext } from "react";
 import Layout from "../../components/Layout";
-import { data, Product as ProductType } from "../../utils/data";
+import { Product as ProductType } from "../../utils/data";
 import { StoreContext } from "../../utils/Store";
 import db from "../../utils/db";
 import Product from "../../models/Product";
@@ -14,9 +12,6 @@ import { toast } from "react-toastify";
 
 export default function ProductScreen({ product }) {
   const { state, dispatch } = useContext(StoreContext);
-  const router: NextRouter = useRouter();
-  const query: ParsedUrlQuery = router.query;
-  const slug = query.slug;
 
   if (!product)
     return (
