@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useContext } from "react";
 import Layout from "../components/Layout";
 import ProductItem from "../components/ProductItem";

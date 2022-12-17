@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import CheckoutWizard from "../components/CheckoutWizard";
